@@ -26,7 +26,7 @@ import javax.validation.constraints.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2019-05-15T13:42:07.174+05:30[Asia/Kolkata]")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2019-10-25T11:37:24.170+05:30[Asia/Kolkata]")
 
 @Api(value = "PatientResource", description = "the PatientResource API")
 public interface PatientResourceApi {
@@ -106,7 +106,7 @@ public interface PatientResourceApi {
     ResponseEntity<List<PatientDTO>> searchPatientsUsingGET(@NotNull @ApiParam(value = "query", required = true) @Valid @RequestParam(value = "query", required = true) String query,@ApiParam(value = "Page number of the requested page") @Valid @RequestParam(value = "page", required = false) Integer page,@ApiParam(value = "Size of a page") @Valid @RequestParam(value = "size", required = false) Integer size,@ApiParam(value = "Sorting criteria in the format: property(,asc|desc). Default sort order is ascending. Multiple sort criteria are supported.") @Valid @RequestParam(value = "sort", required = false) List<String> sort);
 
 
-    @ApiOperation(value = "updatePatient", nickname = "updatePatientUsingPUT1", notes = "", response = PatientDTO.class, tags={ "patient-resource", })
+    @ApiOperation(value = "updatePatient", nickname = "updatePatientUsingPUT", notes = "", response = PatientDTO.class, tags={ "patient-resource", })
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "OK", response = PatientDTO.class),
         @ApiResponse(code = 201, message = "Created"),
@@ -117,6 +117,6 @@ public interface PatientResourceApi {
         produces = "*/*", 
         consumes = "application/json",
         method = RequestMethod.PUT)
-    ResponseEntity<PatientDTO> updatePatientUsingPUT1(@ApiParam(value = "patientDTO" ,required=true )  @Valid @RequestBody PatientDTO patientDTO);
+    ResponseEntity<PatientDTO> updatePatientUsingPUT(@ApiParam(value = "patientDTO" ,required=true )  @Valid @RequestBody PatientDTO patientDTO);
 
 }

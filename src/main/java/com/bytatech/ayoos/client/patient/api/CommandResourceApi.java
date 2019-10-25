@@ -5,8 +5,10 @@
  */
 package com.bytatech.ayoos.client.patient.api;
 
-import com.bytatech.ayoos.client.patient.model.AddressLineDTO;
+import com.bytatech.ayoos.client.patient.model.DMSRecordDTO;
+import com.bytatech.ayoos.client.patient.model.MedicalCaseDTO;
 import com.bytatech.ayoos.client.patient.model.PatientDTO;
+import com.bytatech.ayoos.client.patient.model.RecordDTO;
 import io.swagger.annotations.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -26,23 +28,37 @@ import javax.validation.constraints.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2019-05-15T13:42:07.174+05:30[Asia/Kolkata]")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2019-10-25T11:37:24.170+05:30[Asia/Kolkata]")
 
 @Api(value = "CommandResource", description = "the CommandResource API")
 public interface CommandResourceApi {
 
-    @ApiOperation(value = "createAddressLine", nickname = "createAddressLineUsingPOST1", notes = "", response = AddressLineDTO.class, tags={ "command-resource", })
+    @ApiOperation(value = "createDMSRecord", nickname = "createDMSRecordUsingPOST", notes = "", response = DMSRecordDTO.class, tags={ "command-resource", })
     @ApiResponses(value = { 
-        @ApiResponse(code = 200, message = "OK", response = AddressLineDTO.class),
+        @ApiResponse(code = 200, message = "OK", response = DMSRecordDTO.class),
         @ApiResponse(code = 201, message = "Created"),
         @ApiResponse(code = 401, message = "Unauthorized"),
         @ApiResponse(code = 403, message = "Forbidden"),
         @ApiResponse(code = 404, message = "Not Found") })
-    @RequestMapping(value = "/api/commands/address-lines",
+    @RequestMapping(value = "/api/commands/dms-records",
         produces = "*/*", 
         consumes = "application/json",
         method = RequestMethod.POST)
-    ResponseEntity<AddressLineDTO> createAddressLineUsingPOST1(@ApiParam(value = "addressLineDTO" ,required=true )  @Valid @RequestBody AddressLineDTO addressLineDTO);
+    ResponseEntity<DMSRecordDTO> createDMSRecordUsingPOST(@ApiParam(value = "recordDTO" ,required=true )  @Valid @RequestBody RecordDTO recordDTO);
+
+
+    @ApiOperation(value = "createMedicalCase", nickname = "createMedicalCaseUsingPOST", notes = "", response = MedicalCaseDTO.class, tags={ "command-resource", })
+    @ApiResponses(value = { 
+        @ApiResponse(code = 200, message = "OK", response = MedicalCaseDTO.class),
+        @ApiResponse(code = 201, message = "Created"),
+        @ApiResponse(code = 401, message = "Unauthorized"),
+        @ApiResponse(code = 403, message = "Forbidden"),
+        @ApiResponse(code = 404, message = "Not Found") })
+    @RequestMapping(value = "/api/commands/medical-cases",
+        produces = "*/*", 
+        consumes = "application/json",
+        method = RequestMethod.POST)
+    ResponseEntity<MedicalCaseDTO> createMedicalCaseUsingPOST(@ApiParam(value = "medicalCaseDTO" ,required=true )  @Valid @RequestBody MedicalCaseDTO medicalCaseDTO);
 
 
     @ApiOperation(value = "createPatient", nickname = "createPatientUsingPOST", notes = "", response = PatientDTO.class, tags={ "command-resource", })
@@ -59,31 +75,15 @@ public interface CommandResourceApi {
     ResponseEntity<PatientDTO> createPatientUsingPOST(@ApiParam(value = "patientDTO" ,required=true )  @Valid @RequestBody PatientDTO patientDTO);
 
 
-    @ApiOperation(value = "updateAddressLine", nickname = "updateAddressLineUsingPUT1", notes = "", response = AddressLineDTO.class, tags={ "command-resource", })
+    @ApiOperation(value = "createTicket", nickname = "createTicketUsingGET", notes = "", response = String.class, tags={ "command-resource", })
     @ApiResponses(value = { 
-        @ApiResponse(code = 200, message = "OK", response = AddressLineDTO.class),
-        @ApiResponse(code = 201, message = "Created"),
+        @ApiResponse(code = 200, message = "OK", response = String.class),
         @ApiResponse(code = 401, message = "Unauthorized"),
         @ApiResponse(code = 403, message = "Forbidden"),
         @ApiResponse(code = 404, message = "Not Found") })
-    @RequestMapping(value = "/api/commands/address-lines",
+    @RequestMapping(value = "/api/commands/createTicket/{userId}/{password}",
         produces = "*/*", 
-        consumes = "application/json",
-        method = RequestMethod.PUT)
-    ResponseEntity<AddressLineDTO> updateAddressLineUsingPUT1(@ApiParam(value = "addressLineDTO" ,required=true )  @Valid @RequestBody AddressLineDTO addressLineDTO);
-
-
-    @ApiOperation(value = "updatePatient", nickname = "updatePatientUsingPUT", notes = "", response = PatientDTO.class, tags={ "command-resource", })
-    @ApiResponses(value = { 
-        @ApiResponse(code = 200, message = "OK", response = PatientDTO.class),
-        @ApiResponse(code = 201, message = "Created"),
-        @ApiResponse(code = 401, message = "Unauthorized"),
-        @ApiResponse(code = 403, message = "Forbidden"),
-        @ApiResponse(code = 404, message = "Not Found") })
-    @RequestMapping(value = "/api/commands/patients",
-        produces = "*/*", 
-        consumes = "application/json",
-        method = RequestMethod.PUT)
-    ResponseEntity<PatientDTO> updatePatientUsingPUT(@ApiParam(value = "patientDTO" ,required=true )  @Valid @RequestBody PatientDTO patientDTO);
+        method = RequestMethod.GET)
+    ResponseEntity<String> createTicketUsingGET(@ApiParam(value = "password",required=true) @PathVariable("password") String password,@ApiParam(value = "userId",required=true) @PathVariable("userId") String userId);
 
 }

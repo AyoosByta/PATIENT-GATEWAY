@@ -8,8 +8,6 @@ import io.swagger.annotations.ApiModelProperty;
 
 import java.time.LocalDate;
 import java.util.Date;
-
-
 import org.springframework.validation.annotation.Validated;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
@@ -18,7 +16,7 @@ import javax.validation.constraints.*;
  * PatientDTO
  */
 @Validated
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2019-05-15T13:42:07.174+05:30[Asia/Kolkata]")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2019-10-25T11:37:24.170+05:30[Asia/Kolkata]")
 
 public class PatientDTO   {
   @JsonProperty("createdDate")
@@ -30,11 +28,11 @@ public class PatientDTO   {
   @JsonProperty("dob")
   private LocalDate dob = null;
 
-  @JsonProperty("gender")
-  private String gender = null;
-
   @JsonProperty("id")
   private Long id = null;
+
+  @JsonProperty("idpCode")
+  private String idpCode = null;
 
   @JsonProperty("image")
   private byte[] image = null;
@@ -43,11 +41,7 @@ public class PatientDTO   {
   private String imageContentType = null;
 
   @JsonProperty("location")
-  //@GeoPointField
   private String location = null;
-
-  @JsonProperty("patientCode")
-  private String patientCode = null;
 
   @JsonProperty("phoneNumber")
   private Long phoneNumber = null;
@@ -114,26 +108,6 @@ public class PatientDTO   {
     this.dob = dob;
   }
 
-  public PatientDTO gender(String gender) {
-    this.gender = gender;
-    return this;
-  }
-
-  /**
-   * Get gender
-   * @return gender
-  **/
-  @ApiModelProperty(value = "")
-
-
-  public String getGender() {
-    return gender;
-  }
-
-  public void setGender(String gender) {
-    this.gender = gender;
-  }
-
   public PatientDTO id(Long id) {
     this.id = id;
     return this;
@@ -152,6 +126,26 @@ public class PatientDTO   {
 
   public void setId(Long id) {
     this.id = id;
+  }
+
+  public PatientDTO idpCode(String idpCode) {
+    this.idpCode = idpCode;
+    return this;
+  }
+
+  /**
+   * Get idpCode
+   * @return idpCode
+  **/
+  @ApiModelProperty(value = "")
+
+
+  public String getIdpCode() {
+    return idpCode;
+  }
+
+  public void setIdpCode(String idpCode) {
+    this.idpCode = idpCode;
   }
 
   public PatientDTO image(byte[] image) {
@@ -214,26 +208,6 @@ public class PatientDTO   {
     this.location = location;
   }
 
-  public PatientDTO patientCode(String patientCode) {
-    this.patientCode = patientCode;
-    return this;
-  }
-
-  /**
-   * Get patientCode
-   * @return patientCode
-  **/
-  @ApiModelProperty(value = "")
-
-
-  public String getPatientCode() {
-    return patientCode;
-  }
-
-  public void setPatientCode(String patientCode) {
-    this.patientCode = patientCode;
-  }
-
   public PatientDTO phoneNumber(Long phoneNumber) {
     this.phoneNumber = phoneNumber;
     return this;
@@ -267,18 +241,17 @@ public class PatientDTO   {
     return Objects.equals(this.createdDate, patientDTO.createdDate) &&
         Objects.equals(this.dmsId, patientDTO.dmsId) &&
         Objects.equals(this.dob, patientDTO.dob) &&
-        Objects.equals(this.gender, patientDTO.gender) &&
         Objects.equals(this.id, patientDTO.id) &&
+        Objects.equals(this.idpCode, patientDTO.idpCode) &&
         Objects.equals(this.image, patientDTO.image) &&
         Objects.equals(this.imageContentType, patientDTO.imageContentType) &&
         Objects.equals(this.location, patientDTO.location) &&
-        Objects.equals(this.patientCode, patientDTO.patientCode) &&
         Objects.equals(this.phoneNumber, patientDTO.phoneNumber);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(createdDate, dmsId, dob, gender, id, image, imageContentType, location, patientCode, phoneNumber);
+    return Objects.hash(createdDate, dmsId, dob, id, idpCode, image, imageContentType, location, phoneNumber);
   }
 
   @Override
@@ -289,12 +262,11 @@ public class PatientDTO   {
     sb.append("    createdDate: ").append(toIndentedString(createdDate)).append("\n");
     sb.append("    dmsId: ").append(toIndentedString(dmsId)).append("\n");
     sb.append("    dob: ").append(toIndentedString(dob)).append("\n");
-    sb.append("    gender: ").append(toIndentedString(gender)).append("\n");
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("    idpCode: ").append(toIndentedString(idpCode)).append("\n");
     sb.append("    image: ").append(toIndentedString(image)).append("\n");
     sb.append("    imageContentType: ").append(toIndentedString(imageContentType)).append("\n");
     sb.append("    location: ").append(toIndentedString(location)).append("\n");
-    sb.append("    patientCode: ").append(toIndentedString(patientCode)).append("\n");
     sb.append("    phoneNumber: ").append(toIndentedString(phoneNumber)).append("\n");
     sb.append("}");
     return sb.toString();

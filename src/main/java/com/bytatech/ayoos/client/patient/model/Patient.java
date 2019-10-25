@@ -1,7 +1,7 @@
 package com.bytatech.ayoos.client.patient.model;
 
 import java.util.Objects;
-import com.bytatech.ayoos.client.patient.model.AddressLine;
+/*import com.bytatech.ayoos.client.patient.model.MedicalCase;*/
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import io.swagger.annotations.ApiModel;
@@ -11,7 +11,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 import org.springframework.validation.annotation.Validated;
 import javax.validation.Valid;
 import javax.validation.constraints.*;
@@ -20,13 +19,9 @@ import javax.validation.constraints.*;
  * Patient
  */
 @Validated
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2019-05-15T13:42:07.174+05:30[Asia/Kolkata]")
-//@Document(indexName="patient")
-public class Patient   {
-  @JsonProperty("addressLines")
-  @Valid
-  private List<AddressLine> addressLines = null;
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2019-10-25T11:37:24.170+05:30[Asia/Kolkata]")
 
+public class Patient   {
   @JsonProperty("createdDate")
   private LocalDate createdDate = null;
 
@@ -36,11 +31,11 @@ public class Patient   {
   @JsonProperty("dob")
   private LocalDate dob = null;
 
-  @JsonProperty("gender")
-  private String gender = null;
-
   @JsonProperty("id")
   private Long id = null;
+
+  @JsonProperty("idpCode")
+  private String idpCode = null;
 
   @JsonProperty("image")
   private byte[] image = null;
@@ -49,43 +44,14 @@ public class Patient   {
   private String imageContentType = null;
 
   @JsonProperty("location")
- // @GeoPointField
   private String location = null;
 
-  @JsonProperty("patientCode")
-  private String patientCode = null;
-
+  /*@JsonProperty("medicalCases")
+  @Valid
+  private List<MedicalCase> medicalCases = null;
+*/
   @JsonProperty("phoneNumber")
   private Long phoneNumber = null;
-
-  public Patient addressLines(List<AddressLine> addressLines) {
-    this.addressLines = addressLines;
-    return this;
-  }
-
-  public Patient addAddressLinesItem(AddressLine addressLinesItem) {
-    if (this.addressLines == null) {
-      this.addressLines = new ArrayList<AddressLine>();
-    }
-    this.addressLines.add(addressLinesItem);
-    return this;
-  }
-
-  /**
-   * Get addressLines
-   * @return addressLines
-  **/
-  @ApiModelProperty(value = "")
-
-  @Valid
-
-  public List<AddressLine> getAddressLines() {
-    return addressLines;
-  }
-
-  public void setAddressLines(List<AddressLine> addressLines) {
-    this.addressLines = addressLines;
-  }
 
   public Patient createdDate(LocalDate createdDate) {
     this.createdDate = createdDate;
@@ -149,26 +115,6 @@ public class Patient   {
     this.dob = dob;
   }
 
-  public Patient gender(String gender) {
-    this.gender = gender;
-    return this;
-  }
-
-  /**
-   * Get gender
-   * @return gender
-  **/
-  @ApiModelProperty(value = "")
-
-
-  public String getGender() {
-    return gender;
-  }
-
-  public void setGender(String gender) {
-    this.gender = gender;
-  }
-
   public Patient id(Long id) {
     this.id = id;
     return this;
@@ -187,6 +133,26 @@ public class Patient   {
 
   public void setId(Long id) {
     this.id = id;
+  }
+
+  public Patient idpCode(String idpCode) {
+    this.idpCode = idpCode;
+    return this;
+  }
+
+  /**
+   * Get idpCode
+   * @return idpCode
+  **/
+  @ApiModelProperty(value = "")
+
+
+  public String getIdpCode() {
+    return idpCode;
+  }
+
+  public void setIdpCode(String idpCode) {
+    this.idpCode = idpCode;
   }
 
   public Patient image(byte[] image) {
@@ -249,26 +215,35 @@ public class Patient   {
     this.location = location;
   }
 
-  public Patient patientCode(String patientCode) {
-    this.patientCode = patientCode;
+ /* public Patient medicalCases(List<MedicalCase> medicalCases) {
+    this.medicalCases = medicalCases;
     return this;
   }
 
+  public Patient addMedicalCasesItem(MedicalCase medicalCasesItem) {
+    if (this.medicalCases == null) {
+      this.medicalCases = new ArrayList<MedicalCase>();
+    }
+    this.medicalCases.add(medicalCasesItem);
+    return this;
+  }*/
+
   /**
-   * Get patientCode
-   * @return patientCode
+   * Get medicalCases
+   * @return medicalCases
   **/
   @ApiModelProperty(value = "")
 
+  @Valid
 
-  public String getPatientCode() {
-    return patientCode;
+ /* public List<MedicalCase> getMedicalCases() {
+    return medicalCases;
   }
 
-  public void setPatientCode(String patientCode) {
-    this.patientCode = patientCode;
+  public void setMedicalCases(List<MedicalCase> medicalCases) {
+    this.medicalCases = medicalCases;
   }
-
+*/
   public Patient phoneNumber(Long phoneNumber) {
     this.phoneNumber = phoneNumber;
     return this;
@@ -299,22 +274,21 @@ public class Patient   {
       return false;
     }
     Patient patient = (Patient) o;
-    return Objects.equals(this.addressLines, patient.addressLines) &&
-        Objects.equals(this.createdDate, patient.createdDate) &&
+    return Objects.equals(this.createdDate, patient.createdDate) &&
         Objects.equals(this.dmsId, patient.dmsId) &&
         Objects.equals(this.dob, patient.dob) &&
-        Objects.equals(this.gender, patient.gender) &&
         Objects.equals(this.id, patient.id) &&
+        Objects.equals(this.idpCode, patient.idpCode) &&
         Objects.equals(this.image, patient.image) &&
         Objects.equals(this.imageContentType, patient.imageContentType) &&
         Objects.equals(this.location, patient.location) &&
-        Objects.equals(this.patientCode, patient.patientCode) &&
+       /* Objects.equals(this.medicalCases, patient.medicalCases) &&*/
         Objects.equals(this.phoneNumber, patient.phoneNumber);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(addressLines, createdDate, dmsId, dob, gender, id, image, imageContentType, location, patientCode, phoneNumber);
+    return Objects.hash(createdDate, dmsId, dob, id, idpCode, image, imageContentType, location,/* medicalCases,*/ phoneNumber);
   }
 
   @Override
@@ -322,16 +296,15 @@ public class Patient   {
     StringBuilder sb = new StringBuilder();
     sb.append("class Patient {\n");
     
-    sb.append("    addressLines: ").append(toIndentedString(addressLines)).append("\n");
     sb.append("    createdDate: ").append(toIndentedString(createdDate)).append("\n");
     sb.append("    dmsId: ").append(toIndentedString(dmsId)).append("\n");
     sb.append("    dob: ").append(toIndentedString(dob)).append("\n");
-    sb.append("    gender: ").append(toIndentedString(gender)).append("\n");
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("    idpCode: ").append(toIndentedString(idpCode)).append("\n");
     sb.append("    image: ").append(toIndentedString(image)).append("\n");
     sb.append("    imageContentType: ").append(toIndentedString(imageContentType)).append("\n");
     sb.append("    location: ").append(toIndentedString(location)).append("\n");
-    sb.append("    patientCode: ").append(toIndentedString(patientCode)).append("\n");
+   // sb.append("    medicalCases: ").append(toIndentedString(medicalCases)).append("\n");
     sb.append("    phoneNumber: ").append(toIndentedString(phoneNumber)).append("\n");
     sb.append("}");
     return sb.toString();
