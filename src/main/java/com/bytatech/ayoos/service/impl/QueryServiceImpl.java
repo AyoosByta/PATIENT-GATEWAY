@@ -1,5 +1,10 @@
 package com.bytatech.ayoos.service.impl;
 
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.bytatech.ayoos.service.QueryService;
+
 /*import java.util.*;
 import static org.elasticsearch.index.query.QueryBuilders.*;
 
@@ -38,9 +43,11 @@ import com.bytatech.ayoos.service.QueryService;
 /**
  * Query Service Implementation
  */
-/*@Service
-@Transactional*/
-public class QueryServiceImpl /*implements QueryService*/ {
+@Service
+@Transactional
+public class QueryServiceImpl implements QueryService {
+
+	
 
 	
 

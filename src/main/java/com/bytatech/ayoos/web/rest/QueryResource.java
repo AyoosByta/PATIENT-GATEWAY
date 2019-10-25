@@ -61,9 +61,9 @@ public class QueryResource {
 	@Autowired
 	PatientResourceApi patientResourceApi;
 
-	@Autowired
+	/*@Autowired
 	QueryService queryService;
-
+*/
 	@Autowired
 	UserRatingResourceApi userRatingResourceApi;
 
