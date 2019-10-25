@@ -47,9 +47,9 @@ public class CommandResource {
 
 	private final Logger log = LoggerFactory.getLogger(CommandResource.class);
 
-	@Autowired
+	/*@Autowired
 	QueryService queryService;
-
+*/
 	@Autowired
 	DoctorResourceApi doctorResourceApi;
 
