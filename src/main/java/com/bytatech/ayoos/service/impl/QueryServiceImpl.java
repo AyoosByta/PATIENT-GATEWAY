@@ -4,8 +4,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.bytatech.ayoos.service.QueryService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-/*import java.util.*;
+import java.io.IOException;
+import java.util.*;
 import static org.elasticsearch.index.query.QueryBuilders.*;
 
 import static org.elasticsearch.action.search.SearchType.QUERY_THEN_FETCH;
@@ -18,11 +20,8 @@ import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-*/
-/*import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
-import org.springframework.data.elasticsearch.core.query.SearchQuery;
-import org.springframework.data.elasticsearch.core.query.StringQuery;*/
-/*import org.springframework.stereotype.Service;
+
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,13 +31,30 @@ import com.bytatech.ayoos.client.doctor.model.*;
 
 import com.bytatech.ayoos.client.patient.model.*;
 import com.bytatech.ayoos.service.QueryService;
-*/
 
-
-
-
-
-
+import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.client.core.CountRequest;
+import org.elasticsearch.client.core.CountResponse;
+import org.elasticsearch.common.unit.DistanceUnit;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.Aggregations;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.sort.FieldSortBuilder;
+import org.elasticsearch.search.sort.ScoreSortBuilder;
+import org.elasticsearch.search.sort.SortBuilders;
+import org.elasticsearch.search.sort.SortOrder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 /**
  * Query Service Implementation
@@ -47,155 +63,218 @@ import com.bytatech.ayoos.service.QueryService;
 @Transactional
 public class QueryServiceImpl implements QueryService {
 
-	
+	private RestHighLevelClient restHighLevelClient;
+
+	private ObjectMapper objectMapper;
+
+	public QueryServiceImpl(ObjectMapper objectMapper, RestHighLevelClient restHighLevelClient) {
+		this.objectMapper = objectMapper;
+		this.restHighLevelClient = restHighLevelClient;
+	}
 
 	
 
-
-	/*@Override
+	@Override
 	public Page<Doctor> findAllDoctors(Pageable pageable) {
-		SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(matchAllQuery()).build();
-		List<Doctor> d = elasticsearchOperations.queryForList(searchQuery, Doctor.class);
+		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+		/*
+		 * String[] includeFields = new String[] { "iDPcode", "image" }; String[]
+		 * excludeFields = new String[] { "category.*", "brand.*" };
+		 * searchSourceBuilder.fetchSource(includeFields, excludeFields);
+		 */
 
-		for (Doctor d1 : d) {
-			System.out.println("################################" + d1.getPracticeSince());
+		searchSourceBuilder.query(matchAllQuery());
+
+		SearchRequest searchRequest = generateSearchRequest("doctor", pageable.getPageSize(), pageable.getPageNumber(),
+				searchSourceBuilder);
+		SearchResponse searchResponse = null;
+		try {
+			searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+		} catch (IOException e) { // TODO Auto-generated
+			e.printStackTrace();
+		}
+		return getSearchResult(searchResponse, pageable, new Doctor());
+
+	}
+
+	private SearchRequest generateSearchRequest(String indexName, Integer totalElement, Integer pageNumber,
+			SearchSourceBuilder sourceBuilder) {
+		SearchRequest searchRequest = new SearchRequest(indexName);
+
+		int offset = 0;
+		int totalElements = 0;
+
+		if (pageNumber == 0) {
+			offset = 0;
+			totalElements = totalElement;
+
+		} else {
+
+			offset = totalElement;
+
+			totalElements = (pageNumber * totalElement);
+
+		}
+		sourceBuilder.from(offset);
+		sourceBuilder.size(totalElements);
+
+		searchRequest.source(sourceBuilder);
+		return searchRequest;
+	}
+
+	private <T> Page getSearchResult(SearchResponse response, Pageable page, T t) {
+
+		SearchHit[] searchHit = response.getHits().getHits();
+
+		List<T> list = new ArrayList<>();
+
+		for (SearchHit hit : searchHit) {
+			list.add((T) objectMapper.convertValue(hit.getSourceAsMap(), t.getClass()));
 		}
 
-		return elasticsearchOperations.queryForPage(searchQuery, Doctor.class);
+		return new PageImpl(list, page, response.getHits().getTotalHits());
 
 	}
-
-	
-	@Override
-	public List<TestDate> findAllTestDates(Pageable pageable) {
-		SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(matchAllQuery()).build();
-		return elasticsearchOperations.queryForList(searchQuery,TestDate.class);
-
-	}
-	
-	@Override
-	public Optional<Doctor> findDoctorByDoctorId(String doctorId) {
-
-		StringQuery stringQuery = new StringQuery(termQuery("doctorId", doctorId).toString());
-		return Optional.of(elasticsearchOperations.queryForObject(stringQuery, Doctor.class));
-	}
-	
-	@Override
-	public Optional<Appointment> findAppointmentByTrackingId(String trackingId){
-		
-		StringQuery stringQuery=new StringQuery(termQuery("trackingId.keyword", trackingId).toString());
-		return Optional.of(elasticsearchOperations.queryForObject(stringQuery, Appointment.class));
-	}
-
-	@Override
-	public List<String> findAllQualifications(Pageable pageable) {
-		List<String> qualificationList = new ArrayList<String>();
-		SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(matchAllQuery())
-				.withSearchType(QUERY_THEN_FETCH).withIndices("qualification").withTypes("qualification")
-				.addAggregation(AggregationBuilders.terms("distinct_qualification").field("qualification.keyword"))
-				.build();
-
-		AggregatedPage<Qualification> result = elasticsearchTemplate.queryForPage(searchQuery, Qualification.class);
-		TermsAggregation subjectAgg = result.getAggregation("distinct_qualification", TermsAggregation.class);
-		
-		List<Entry> bucket = subjectAgg.getBuckets();
-
-		for (int i = 0; i < subjectAgg.getBuckets().size(); i++) {
-			qualificationList.add(subjectAgg.getBuckets().get(i).getKey());
-		}
-		
-
-		return qualificationList;
-
-	}
-
-	@Override
-	public Page<Doctor> facetSearch(String specialization, Double ratings, Double feeFrom, Double feeTo,
-			Pageable pageable) {
-
-		List<QueryBuilders> queryList = new ArrayList<QueryBuilders>();
-		// QueryBuilders.matchQuery("specialization", specialization);
-		// queryList.add( QueryBuilders.matchQuery("totalRatings", ratings));
-		// queryList.add( QueryBuilders.rangeQuery("fees").gte("feeFrom").lte("feeTo"));
-		// queryList.add( QueryBuilders.matchQuery("workplace.name", workplaceName));
-
-		SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(matchAllQuery())
-
-				.withFilter(QueryBuilders.boolQuery().should(QueryBuilders.matchQuery("specialization", specialization))
-						.should(QueryBuilders.matchQuery("totalRatings", ratings))
-						.should(QueryBuilders.rangeQuery("paymentSettings.amount").gte("fr").lte("to"))
-				 .should(QueryBuilders.matchQuery("workplace.name", workplaceName)) ).build();
-		return elasticsearchOperations.queryForPage(searchQuery, Doctor.class);
-	}
-
-	
-	
-	
-	@Override
-	public Page<Review> findReviewByDoctorId(String doctorId, Pageable pageable) {
-		SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(matchQuery("doctor.doctorId", doctorId))
-				.build();
-
-		return elasticsearchOperations.queryForPage(searchQuery, Review.class);
-
-	}
-
-	@Override
-	public Page<Doctor> findDoctors(String searchTerm, Pageable pageable) {
-		SearchQuery searchQuery = new NativeSearchQueryBuilder()
-				.withQuery(QueryBuilders.boolQuery().should(QueryBuilders.matchQuery("doctorId", searchTerm))
-						.should(QueryBuilders.matchQuery("specialization", searchTerm)))
-				.build();
-
-		return elasticsearchOperations.queryForPage(searchQuery, Doctor.class);
-	}
-
-	@Override
-	public Optional<Patient> findPatient(String patientCode) {
-		StringQuery stringQuery = new StringQuery(matchQuery("patientCode", patientCode).toString());
-		return Optional.of(elasticsearchOperations.queryForObject(stringQuery, Patient.class));
-	}
-
-	@Override
-	public List<WorkPlace> findByLocationWithin(Point point, Distance distance) {
-
-		return elasticsearchTemplate.queryForList(getGeoQuery(point, distance), WorkPlace.class);
-
-	}
-
-	private CriteriaQuery getGeoQuery(Point point, Distance distance) {
-		return new CriteriaQuery(new Criteria("location").within(point, distance));
-	}
-
-
-	 (non-Javadoc)
-	 * @see com.bytatech.ayoos.service.QueryService#findRatingByDoctorIdAndPatientName(java.lang.String, java.lang.String)
-	 
-	@Override
-	public UserRating findRatingByDoctorIdAndPatientName(String doctorId, String patientCode) {
-
-		StringQuery stringQuery = new StringQuery(QueryBuilders.boolQuery().must(QueryBuilders.termQuery("doctor.doctorId", doctorId))
-				.must(QueryBuilders.termQuery("userName", patientCode)).toString());
-			
-		return elasticsearchOperations.queryForObject(stringQuery, UserRating.class);
-	}
-
-
-	 (non-Javadoc)
-	 * @see com.bytatech.ayoos.service.QueryService#findReviewByDoctorIdAndPatientName(java.lang.String, java.lang.String)
-	 
-	@Override
-	public Review findReviewByDoctorIdAndPatientName(String doctorId, String patientCode) {
-		StringQuery stringQuery = new StringQuery(QueryBuilders.boolQuery().must(QueryBuilders.termQuery("doctor.doctorId", doctorId))
-				.must(QueryBuilders.termQuery("userName", patientCode)).toString());
-			
-		return elasticsearchOperations.queryForObject(stringQuery, Review.class);
-	}
-
-	
-	@Override
-	public Page<Patient> findAllPatientWithoutSearch(Pageable pageable) {
-		SearchQuery searchQuery = new NativeSearchQueryBuilder().withQuery(matchAllQuery()).build();
-		return elasticsearchOperations.queryForPage(searchQuery, Patient.class);
-	}*/
+	/*
+	 * @Override public List<TestDate> findAllTestDates(Pageable pageable) {
+	 * SearchQuery searchQuery = new
+	 * NativeSearchQueryBuilder().withQuery(matchAllQuery()).build(); return
+	 * elasticsearchOperations.queryForList(searchQuery,TestDate.class);
+	 * 
+	 * }
+	 * 
+	 * @Override public Optional<Doctor> findDoctorByDoctorId(String doctorId) {
+	 * 
+	 * StringQuery stringQuery = new StringQuery(termQuery("doctorId",
+	 * doctorId).toString()); return
+	 * Optional.of(elasticsearchOperations.queryForObject(stringQuery,
+	 * Doctor.class)); }
+	 * 
+	 * @Override public Optional<Appointment> findAppointmentByTrackingId(String
+	 * trackingId){
+	 * 
+	 * StringQuery stringQuery=new StringQuery(termQuery("trackingId.keyword",
+	 * trackingId).toString()); return
+	 * Optional.of(elasticsearchOperations.queryForObject(stringQuery,
+	 * Appointment.class)); }
+	 * 
+	 * @Override public List<String> findAllQualifications(Pageable pageable) {
+	 * List<String> qualificationList = new ArrayList<String>(); SearchQuery
+	 * searchQuery = new NativeSearchQueryBuilder().withQuery(matchAllQuery())
+	 * .withSearchType(QUERY_THEN_FETCH).withIndices("qualification").withTypes(
+	 * "qualification")
+	 * .addAggregation(AggregationBuilders.terms("distinct_qualification").field(
+	 * "qualification.keyword")) .build();
+	 * 
+	 * AggregatedPage<Qualification> result =
+	 * elasticsearchTemplate.queryForPage(searchQuery, Qualification.class);
+	 * TermsAggregation subjectAgg = result.getAggregation("distinct_qualification",
+	 * TermsAggregation.class);
+	 * 
+	 * List<Entry> bucket = subjectAgg.getBuckets();
+	 * 
+	 * for (int i = 0; i < subjectAgg.getBuckets().size(); i++) {
+	 * qualificationList.add(subjectAgg.getBuckets().get(i).getKey()); }
+	 * 
+	 * 
+	 * return qualificationList;
+	 * 
+	 * }
+	 * 
+	 * @Override public Page<Doctor> facetSearch(String specialization, Double
+	 * ratings, Double feeFrom, Double feeTo, Pageable pageable) {
+	 * 
+	 * List<QueryBuilders> queryList = new ArrayList<QueryBuilders>(); //
+	 * QueryBuilders.matchQuery("specialization", specialization); // queryList.add(
+	 * QueryBuilders.matchQuery("totalRatings", ratings)); // queryList.add(
+	 * QueryBuilders.rangeQuery("fees").gte("feeFrom").lte("feeTo")); //
+	 * queryList.add( QueryBuilders.matchQuery("workplace.name", workplaceName));
+	 * 
+	 * SearchQuery searchQuery = new
+	 * NativeSearchQueryBuilder().withQuery(matchAllQuery())
+	 * 
+	 * .withFilter(QueryBuilders.boolQuery().should(QueryBuilders.matchQuery(
+	 * "specialization", specialization))
+	 * .should(QueryBuilders.matchQuery("totalRatings", ratings))
+	 * .should(QueryBuilders.rangeQuery("paymentSettings.amount").gte("fr").lte("to"
+	 * )) .should(QueryBuilders.matchQuery("workplace.name", workplaceName))
+	 * ).build(); return elasticsearchOperations.queryForPage(searchQuery,
+	 * Doctor.class); }
+	 * 
+	 * 
+	 * 
+	 * 
+	 * @Override public Page<Review> findReviewByDoctorId(String doctorId, Pageable
+	 * pageable) { SearchQuery searchQuery = new
+	 * NativeSearchQueryBuilder().withQuery(matchQuery("doctor.doctorId", doctorId))
+	 * .build();
+	 * 
+	 * return elasticsearchOperations.queryForPage(searchQuery, Review.class);
+	 * 
+	 * }
+	 * 
+	 * @Override public Page<Doctor> findDoctors(String searchTerm, Pageable
+	 * pageable) { SearchQuery searchQuery = new NativeSearchQueryBuilder()
+	 * .withQuery(QueryBuilders.boolQuery().should(QueryBuilders.matchQuery(
+	 * "doctorId", searchTerm)) .should(QueryBuilders.matchQuery("specialization",
+	 * searchTerm))) .build();
+	 * 
+	 * return elasticsearchOperations.queryForPage(searchQuery, Doctor.class); }
+	 * 
+	 * @Override public Optional<Patient> findPatient(String patientCode) {
+	 * StringQuery stringQuery = new StringQuery(matchQuery("patientCode",
+	 * patientCode).toString()); return
+	 * Optional.of(elasticsearchOperations.queryForObject(stringQuery,
+	 * Patient.class)); }
+	 * 
+	 * @Override public List<WorkPlace> findByLocationWithin(Point point, Distance
+	 * distance) {
+	 * 
+	 * return elasticsearchTemplate.queryForList(getGeoQuery(point, distance),
+	 * WorkPlace.class);
+	 * 
+	 * }
+	 * 
+	 * private CriteriaQuery getGeoQuery(Point point, Distance distance) { return
+	 * new CriteriaQuery(new Criteria("location").within(point, distance)); }
+	 * 
+	 * 
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.bytatech.ayoos.service.QueryService#findRatingByDoctorIdAndPatientName(
+	 * java.lang.String, java.lang.String)
+	 * 
+	 * @Override public UserRating findRatingByDoctorIdAndPatientName(String
+	 * doctorId, String patientCode) {
+	 * 
+	 * StringQuery stringQuery = new
+	 * StringQuery(QueryBuilders.boolQuery().must(QueryBuilders.termQuery(
+	 * "doctor.doctorId", doctorId)) .must(QueryBuilders.termQuery("userName",
+	 * patientCode)).toString());
+	 * 
+	 * return elasticsearchOperations.queryForObject(stringQuery, UserRating.class);
+	 * }
+	 * 
+	 * 
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.bytatech.ayoos.service.QueryService#findReviewByDoctorIdAndPatientName(
+	 * java.lang.String, java.lang.String)
+	 * 
+	 * @Override public Review findReviewByDoctorIdAndPatientName(String doctorId,
+	 * String patientCode) { StringQuery stringQuery = new
+	 * StringQuery(QueryBuilders.boolQuery().must(QueryBuilders.termQuery(
+	 * "doctor.doctorId", doctorId)) .must(QueryBuilders.termQuery("userName",
+	 * patientCode)).toString());
+	 * 
+	 * return elasticsearchOperations.queryForObject(stringQuery, Review.class); }
+	 * 
+	 * 
+	 * @Override public Page<Patient> findAllPatientWithoutSearch(Pageable pageable)
+	 * { SearchQuery searchQuery = new
+	 * NativeSearchQueryBuilder().withQuery(matchAllQuery()).build(); return
+	 * elasticsearchOperations.queryForPage(searchQuery, Patient.class); }
+	 */
 }

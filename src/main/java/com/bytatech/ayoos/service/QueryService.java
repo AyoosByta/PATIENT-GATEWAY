@@ -16,9 +16,9 @@ import com.bytatech.ayoos.client.patient.model.*;
 
 public interface QueryService {
 
-	// search using QueryDsl(MATCHALL QUERY)
-	/*public Page<Doctor> findAllDoctors(Pageable pageable);
-	public Optional<Appointment> findAppointmentByTrackingId(String trackingId);
+
+	public Page<Doctor> findAllDoctors(Pageable pageable);
+	/*public Optional<Appointment> findAppointmentByTrackingId(String trackingId);
 
 	public List<String> findAllQualifications(Pageable pageable);
 
