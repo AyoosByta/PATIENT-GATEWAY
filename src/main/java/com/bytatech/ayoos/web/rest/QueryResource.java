@@ -61,9 +61,9 @@ public class QueryResource {
 	@Autowired
 	PatientResourceApi patientResourceApi;
 
-	/*@Autowired
+	@Autowired
 	QueryService queryService;
-*/
+
 	@Autowired
 	UserRatingResourceApi userRatingResourceApi;
 
@@ -73,18 +73,23 @@ public class QueryResource {
 	@Autowired
 	GoogleMedicalNewsApi googleApi;
 
-/*	@GetMapping("/findAllDoctors")
+	@GetMapping("/findAllDoctors")
 	public ResponseEntity<List<Doctor>> findAllDoctors(Pageable pageable) {
 		return ResponseEntity.ok().body(queryService.findAllDoctors(pageable).getContent());
-	}*/
+	}
 
-	/*
+	
 	@GetMapping("/findAllQualification")
 	public List<String> findAllQualification(Pageable pageable) {
 		return queryService.findAllQualifications(pageable);
 	}
 
-	@GetMapping("/facetSearch/{specialization}/{rating}/{feeFrom}/{feeTo}")
+	@GetMapping("/doctors/{doctorId}")
+	public ResponseEntity<Doctor> findDoctorByDoctorId(@PathVariable String doctorId) {
+		Optional<Doctor> doctor = queryService.findDoctorByDoctorId(doctorId);
+		return ResponseUtil.wrapOrNotFound(doctor);
+	}
+	/*@GetMapping("/facetSearch/{specialization}/{rating}/{feeFrom}/{feeTo}")
 	public ResponseEntity<List<Doctor>> facetSearch(@PathVariable String specialization, @PathVariable Double rating,
 			@PathVariable Double feeFrom, @PathVariable Double feeTo, Pageable pageable) {
 		return ResponseEntity.ok()
@@ -125,11 +130,7 @@ public class QueryResource {
 		return ResponseUtil.wrapOrNotFound(patient);
 	}
 
-	@GetMapping("/doctors/{doctorId}")
-	public ResponseEntity<Doctor> findDoctorByDoctorId(@PathVariable String doctorId) {
-		Optional<Doctor> doctor = queryService.findDoctorByDoctorId(doctorId);
-		return ResponseUtil.wrapOrNotFound(doctor);
-	}*/
+	*/
 
 	@GetMapping("/test2/{date}/{doctorId}")
 	public ResponseEntity<List<ReservedSlotDTO>> test2(@PathVariable String date, @PathVariable Long doctorId) {

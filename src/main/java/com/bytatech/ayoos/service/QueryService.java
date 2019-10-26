@@ -18,11 +18,13 @@ public interface QueryService {
 
 
 	public Page<Doctor> findAllDoctors(Pageable pageable);
-	/*public Optional<Appointment> findAppointmentByTrackingId(String trackingId);
+	//public Optional<Appointment> findAppointmentByTrackingId(String trackingId);
 
 	public List<String> findAllQualifications(Pageable pageable);
+	
+	public  Optional<Doctor> findDoctorByDoctorId(String doctorId);
 
-	public Page<Doctor> facetSearch(String specialization,Double ratings, Double feeFrom,
+	/*public Page<Doctor> facetSearch(String specialization,Double ratings, Double feeFrom,
 			Double feeTo, Pageable pageable);
 
 	public List<WorkPlace>  findByLocationWithin(Point point, Distance distance);
@@ -39,7 +41,7 @@ public interface QueryService {
 
 	public Optional<Patient> findPatient(String patientCode);
 
-	public  Optional<Doctor> findDoctorByDoctorId(String doctorId);
+	
 
 	List<TestDate> findAllTestDates(Pageable pageable);
 

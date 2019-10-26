@@ -135,21 +135,114 @@ public class QueryServiceImpl implements QueryService {
 		return new PageImpl(list, page, response.getHits().getTotalHits());
 
 	}
+	@Override public List<String> findAllQualifications(Pageable pageable) {
+		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+		/*
+		 * String[] includeFields = new String[] { "iDPcode", "image" }; String[]
+		 * excludeFields = new String[] { "category.*", "brand.*" };
+		 * searchSourceBuilder.fetchSource(includeFields, excludeFields);
+		 */
+
+		searchSourceBuilder.query(matchAllQuery());
+
+		SearchRequest searchRequest = generateSearchRequest("qualification", pageable.getPageSize(), pageable.getPageNumber(),
+				searchSourceBuilder);
+		SearchResponse searchResponse = null;
+		try {
+			searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+		} catch (IOException e) { // TODO Auto-generated
+			e.printStackTrace();
+		}
+		return getSearchResult(searchResponse, pageable, new Qualification());
+		  
+		  }
+	
+	
+	
+	
+	
+	@Override public List<String> findAllQualifications(Pageable pageable) {
+		  List<String> qualificationList = new ArrayList<String>(); SearchQuery
+		  searchQuery = new NativeSearchQueryBuilder().withQuery(matchAllQuery())
+		  .withSearchType(QUERY_THEN_FETCH).withIndices("qualification").withTypes(
+		  "qualification")
+		  .addAggregation(AggregationBuilders.terms("distinct_qualification").field(
+		  "qualification.keyword")) .build();
+		  
+		  AggregatedPage<Qualification> result =
+		  elasticsearchTemplate.queryForPage(searchQuery, Qualification.class);
+		  TermsAggregation subjectAgg = result.getAggregation("distinct_qualification",
+		  TermsAggregation.class);
+		  
+		  List<Entry> bucket = subjectAgg.getBuckets();
+		  
+		  for (int i = 0; i < subjectAgg.getBuckets().size(); i++) {
+		  qualificationList.add(subjectAgg.getBuckets().get(i).getKey()); }
+		  
+		  
+		  return qualificationList;
+		  
+		  }
+		  
+	 @Override public Optional<Doctor> findDoctorByDoctorId(String doctorId) {
+		 SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+
+			searchSourceBuilder.query(termQuery("doctorId",
+					  doctorId));
+
+			SearchRequest searchRequest = new SearchRequest("doctor");
+			searchRequest.source(searchSourceBuilder);
+			SearchResponse searchResponse = null;
+			try {
+				searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+			} catch (IOException e) { // TODO Auto-generated
+				e.printStackTrace();
+			}
+			SearchHit[] searchHit = searchResponse.getHits().getHits();
+
+			List<Doctor> list = new ArrayList<>();
+
+			for (SearchHit hit : searchHit) {
+				list.add(objectMapper.convertValue(hit.getSourceAsMap(), Doctor.class));
+			}
+			return Optional.of(list.get(0));
+ 
+		  
+		  }
+		 
+	 private <T> T getResult(SearchResponse response, T t) {
+
+			SearchHit[] searchHit = response.getHits().getHits();
+
+			List<T> list = new ArrayList<>();
+
+			for (SearchHit hit : searchHit) {
+				list.add((T) objectMapper.convertValue(hit.getSourceAsMap(), t.getClass()));
+			}
+
+			return list.get(0);
+
+		}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	/*
-	 * @Override public List<TestDate> findAllTestDates(Pageable pageable) {
-	 * SearchQuery searchQuery = new
-	 * NativeSearchQueryBuilder().withQuery(matchAllQuery()).build(); return
-	 * elasticsearchOperations.queryForList(searchQuery,TestDate.class);
+	 *
 	 * 
-	 * }
-	 * 
-	 * @Override public Optional<Doctor> findDoctorByDoctorId(String doctorId) {
-	 * 
-	 * StringQuery stringQuery = new StringQuery(termQuery("doctorId",
-	 * doctorId).toString()); return
-	 * Optional.of(elasticsearchOperations.queryForObject(stringQuery,
-	 * Doctor.class)); }
-	 * 
+	 *
 	 * @Override public Optional<Appointment> findAppointmentByTrackingId(String
 	 * trackingId){
 	 * 
