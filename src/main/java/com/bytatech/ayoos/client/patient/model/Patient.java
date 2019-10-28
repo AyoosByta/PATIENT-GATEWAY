@@ -1,7 +1,7 @@
 package com.bytatech.ayoos.client.patient.model;
 
 import java.util.Objects;
-/*import com.bytatech.ayoos.client.patient.model.MedicalCase;*/
+import com.bytatech.ayoos.client.patient.model.MedicalCase;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import io.swagger.annotations.ApiModel;
@@ -19,7 +19,7 @@ import javax.validation.constraints.*;
  * Patient
  */
 @Validated
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2019-10-25T11:37:24.170+05:30[Asia/Kolkata]")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2019-10-28T11:07:58.008+05:30[Asia/Kolkata]")
 
 public class Patient   {
   @JsonProperty("createdDate")
@@ -46,10 +46,10 @@ public class Patient   {
   @JsonProperty("location")
   private String location = null;
 
-  /*@JsonProperty("medicalCases")
+  @JsonProperty("medicalCases")
   @Valid
   private List<MedicalCase> medicalCases = null;
-*/
+
   @JsonProperty("phoneNumber")
   private Long phoneNumber = null;
 
@@ -215,7 +215,7 @@ public class Patient   {
     this.location = location;
   }
 
- /* public Patient medicalCases(List<MedicalCase> medicalCases) {
+  public Patient medicalCases(List<MedicalCase> medicalCases) {
     this.medicalCases = medicalCases;
     return this;
   }
@@ -226,7 +226,7 @@ public class Patient   {
     }
     this.medicalCases.add(medicalCasesItem);
     return this;
-  }*/
+  }
 
   /**
    * Get medicalCases
@@ -236,14 +236,14 @@ public class Patient   {
 
   @Valid
 
- /* public List<MedicalCase> getMedicalCases() {
+  public List<MedicalCase> getMedicalCases() {
     return medicalCases;
   }
 
   public void setMedicalCases(List<MedicalCase> medicalCases) {
     this.medicalCases = medicalCases;
   }
-*/
+
   public Patient phoneNumber(Long phoneNumber) {
     this.phoneNumber = phoneNumber;
     return this;
@@ -282,13 +282,13 @@ public class Patient   {
         Objects.equals(this.image, patient.image) &&
         Objects.equals(this.imageContentType, patient.imageContentType) &&
         Objects.equals(this.location, patient.location) &&
-       /* Objects.equals(this.medicalCases, patient.medicalCases) &&*/
+        Objects.equals(this.medicalCases, patient.medicalCases) &&
         Objects.equals(this.phoneNumber, patient.phoneNumber);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(createdDate, dmsId, dob, id, idpCode, image, imageContentType, location,/* medicalCases,*/ phoneNumber);
+    return Objects.hash(createdDate, dmsId, dob, id, idpCode, image, imageContentType, location, medicalCases, phoneNumber);
   }
 
   @Override
@@ -304,7 +304,7 @@ public class Patient   {
     sb.append("    image: ").append(toIndentedString(image)).append("\n");
     sb.append("    imageContentType: ").append(toIndentedString(imageContentType)).append("\n");
     sb.append("    location: ").append(toIndentedString(location)).append("\n");
-   // sb.append("    medicalCases: ").append(toIndentedString(medicalCases)).append("\n");
+    sb.append("    medicalCases: ").append(toIndentedString(medicalCases)).append("\n");
     sb.append("    phoneNumber: ").append(toIndentedString(phoneNumber)).append("\n");
     sb.append("}");
     return sb.toString();

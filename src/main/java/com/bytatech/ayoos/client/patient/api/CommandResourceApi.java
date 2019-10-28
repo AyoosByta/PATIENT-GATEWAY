@@ -28,7 +28,7 @@ import javax.validation.constraints.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2019-10-25T11:37:24.170+05:30[Asia/Kolkata]")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2019-10-28T11:07:58.008+05:30[Asia/Kolkata]")
 
 @Api(value = "CommandResource", description = "the CommandResource API")
 public interface CommandResourceApi {
@@ -75,6 +75,20 @@ public interface CommandResourceApi {
     ResponseEntity<PatientDTO> createPatientUsingPOST(@ApiParam(value = "patientDTO" ,required=true )  @Valid @RequestBody PatientDTO patientDTO);
 
 
+    @ApiOperation(value = "createPatientWithDMS", nickname = "createPatientWithDMSUsingPOST", notes = "", response = PatientDTO.class, tags={ "command-resource", })
+    @ApiResponses(value = { 
+        @ApiResponse(code = 200, message = "OK", response = PatientDTO.class),
+        @ApiResponse(code = 201, message = "Created"),
+        @ApiResponse(code = 401, message = "Unauthorized"),
+        @ApiResponse(code = 403, message = "Forbidden"),
+        @ApiResponse(code = 404, message = "Not Found") })
+    @RequestMapping(value = "/api/commands/patients-dms",
+        produces = "*/*", 
+        consumes = "application/json",
+        method = RequestMethod.POST)
+    ResponseEntity<PatientDTO> createPatientWithDMSUsingPOST(@ApiParam(value = "patientDTO" ,required=true )  @Valid @RequestBody PatientDTO patientDTO);
+
+
     @ApiOperation(value = "createTicket", nickname = "createTicketUsingGET", notes = "", response = String.class, tags={ "command-resource", })
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "OK", response = String.class),
@@ -85,5 +99,31 @@ public interface CommandResourceApi {
         produces = "*/*", 
         method = RequestMethod.GET)
     ResponseEntity<String> createTicketUsingGET(@ApiParam(value = "password",required=true) @PathVariable("password") String password,@ApiParam(value = "userId",required=true) @PathVariable("userId") String userId);
+
+
+    @ApiOperation(value = "test", nickname = "testUsingGET", notes = "", response = String.class, tags={ "command-resource", })
+    @ApiResponses(value = { 
+        @ApiResponse(code = 200, message = "OK", response = String.class),
+        @ApiResponse(code = 401, message = "Unauthorized"),
+        @ApiResponse(code = 403, message = "Forbidden"),
+        @ApiResponse(code = 404, message = "Not Found") })
+    @RequestMapping(value = "/api/commands/patients",
+        produces = "*/*", 
+        method = RequestMethod.GET)
+    ResponseEntity<String> testUsingGET();
+
+
+    @ApiOperation(value = "updatePatient", nickname = "updatePatientUsingPUT", notes = "", response = PatientDTO.class, tags={ "command-resource", })
+    @ApiResponses(value = { 
+        @ApiResponse(code = 200, message = "OK", response = PatientDTO.class),
+        @ApiResponse(code = 201, message = "Created"),
+        @ApiResponse(code = 401, message = "Unauthorized"),
+        @ApiResponse(code = 403, message = "Forbidden"),
+        @ApiResponse(code = 404, message = "Not Found") })
+    @RequestMapping(value = "/api/commands/patients",
+        produces = "*/*", 
+        consumes = "application/json",
+        method = RequestMethod.PUT)
+    ResponseEntity<PatientDTO> updatePatientUsingPUT(@ApiParam(value = "patientDTO" ,required=true )  @Valid @RequestBody PatientDTO patientDTO);
 
 }

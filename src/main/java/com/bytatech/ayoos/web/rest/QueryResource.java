@@ -36,9 +36,8 @@ import com.bytatech.ayoos.client.doctor.model.WorkPlace;
 import com.bytatech.ayoos.client.medicalnews.api.GoogleMedicalNewsApi;
 import com.bytatech.ayoos.client.medicalnews.model.GoogleMedicalNews;
 import com.bytatech.ayoos.client.patient.model.*;
-import com.bytatech.ayoos.client.patient.api.AddressLineResourceApi;
+
 import com.bytatech.ayoos.client.patient.api.PatientResourceApi;
-import com.bytatech.ayoos.client.patient.model.AddressLineDTO;
 import com.bytatech.ayoos.client.patient.model.PatientDTO;
 import com.bytatech.ayoos.service.QueryService;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -55,8 +54,9 @@ public class QueryResource {
 	@Autowired
 	ReservedSlotResourceApi reservedSlotResourceApi;
 
-	@Autowired
-	AddressLineResourceApi addressLineResourceApi;
+	/*
+	 * @Autowired AddressLineResourceApi addressLineResourceApi;
+	 */
 
 	@Autowired
 	PatientResourceApi patientResourceApi;
@@ -194,12 +194,15 @@ public class QueryResource {
 
 	}
 */
-	@GetMapping("/address-linesByPatientId/{patientId}")
-	public ResponseEntity<List<AddressLineDTO>> getAllAddressLinesByPatientId(
-			@PathVariable("patientId") Long patientId) {
-		return addressLineResourceApi.getAllAddressLinesByPatientIdUsingGET(patientId);
-
-	}
+	/*
+	 * @GetMapping("/address-linesByPatientId/{patientId}") public
+	 * ResponseEntity<List<AddressLineDTO>> getAllAddressLinesByPatientId(
+	 * 
+	 * @PathVariable("patientId") Long patientId) { return
+	 * addressLineResourceApi.getAllAddressLinesByPatientIdUsingGET(patientId);
+	 * 
+	 * }
+	 */
 
 	@GetMapping("/Dr-slots/{date}/{doctorId}")
 	public ResponseEntity<List<ReservedSlotDTO>> findSlots(@PathVariable String date, @PathVariable Long doctorId) {

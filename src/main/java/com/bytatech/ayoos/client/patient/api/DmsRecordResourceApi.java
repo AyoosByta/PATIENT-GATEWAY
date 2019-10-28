@@ -25,7 +25,7 @@ import javax.validation.constraints.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2019-10-25T11:37:24.170+05:30[Asia/Kolkata]")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2019-10-28T11:07:58.008+05:30[Asia/Kolkata]")
 
 @Api(value = "DmsRecordResource", description = "the DmsRecordResource API")
 public interface DmsRecordResourceApi {
@@ -91,7 +91,7 @@ public interface DmsRecordResourceApi {
     ResponseEntity<List<DMSRecordDTO>> searchDMSRecordsUsingGET(@NotNull @ApiParam(value = "query", required = true) @Valid @RequestParam(value = "query", required = true) String query,@ApiParam(value = "Page number of the requested page") @Valid @RequestParam(value = "page", required = false) Integer page,@ApiParam(value = "Size of a page") @Valid @RequestParam(value = "size", required = false) Integer size,@ApiParam(value = "Sorting criteria in the format: property(,asc|desc). Default sort order is ascending. Multiple sort criteria are supported.") @Valid @RequestParam(value = "sort", required = false) List<String> sort);
 
 
-    @ApiOperation(value = "test", nickname = "testUsingGET", notes = "", response = String.class, tags={ "dms-record-resource", })
+    @ApiOperation(value = "test", nickname = "testUsingGET1", notes = "", response = String.class, tags={ "dms-record-resource", })
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "OK", response = String.class),
         @ApiResponse(code = 401, message = "Unauthorized"),
@@ -100,7 +100,7 @@ public interface DmsRecordResourceApi {
     @RequestMapping(value = "/api/dms",
         produces = "*/*", 
         method = RequestMethod.GET)
-    ResponseEntity<String> testUsingGET();
+    ResponseEntity<String> testUsingGET1();
 
 
     @ApiOperation(value = "updateDMSRecord", nickname = "updateDMSRecordUsingPUT", notes = "", response = DMSRecordDTO.class, tags={ "dms-record-resource", })

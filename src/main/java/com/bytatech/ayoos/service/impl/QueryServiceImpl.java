@@ -153,37 +153,37 @@ public class QueryServiceImpl implements QueryService {
 		} catch (IOException e) { // TODO Auto-generated
 			e.printStackTrace();
 		}
-		return getSearchResult(searchResponse, pageable, new Qualification());
+		return getSearchResult(searchResponse, pageable, new Qualification()).getContent();
 		  
 		  }
 	
 	
 	
 	
-	
-	@Override public List<String> findAllQualifications(Pageable pageable) {
-		  List<String> qualificationList = new ArrayList<String>(); SearchQuery
-		  searchQuery = new NativeSearchQueryBuilder().withQuery(matchAllQuery())
-		  .withSearchType(QUERY_THEN_FETCH).withIndices("qualification").withTypes(
-		  "qualification")
-		  .addAggregation(AggregationBuilders.terms("distinct_qualification").field(
-		  "qualification.keyword")) .build();
-		  
-		  AggregatedPage<Qualification> result =
-		  elasticsearchTemplate.queryForPage(searchQuery, Qualification.class);
-		  TermsAggregation subjectAgg = result.getAggregation("distinct_qualification",
-		  TermsAggregation.class);
-		  
-		  List<Entry> bucket = subjectAgg.getBuckets();
-		  
-		  for (int i = 0; i < subjectAgg.getBuckets().size(); i++) {
-		  qualificationList.add(subjectAgg.getBuckets().get(i).getKey()); }
-		  
-		  
-		  return qualificationList;
-		  
-		  }
-		  
+	/*
+	 * @Override public List<String> findAllQualifications(Pageable pageable) {
+	 * List<String> qualificationList = new ArrayList<String>(); SearchQuery
+	 * searchQuery = new NativeSearchQueryBuilder().withQuery(matchAllQuery())
+	 * .withSearchType(QUERY_THEN_FETCH).withIndices("qualification").withTypes(
+	 * "qualification")
+	 * .addAggregation(AggregationBuilders.terms("distinct_qualification").field(
+	 * "qualification.keyword")) .build();
+	 * 
+	 * AggregatedPage<Qualification> result =
+	 * elasticsearchTemplate.queryForPage(searchQuery, Qualification.class);
+	 * TermsAggregation subjectAgg = result.getAggregation("distinct_qualification",
+	 * TermsAggregation.class);
+	 * 
+	 * List<Entry> bucket = subjectAgg.getBuckets();
+	 * 
+	 * for (int i = 0; i < subjectAgg.getBuckets().size(); i++) {
+	 * qualificationList.add(subjectAgg.getBuckets().get(i).getKey()); }
+	 * 
+	 * 
+	 * return qualificationList;
+	 * 
+	 * }
+	 */
 	 @Override public Optional<Doctor> findDoctorByDoctorId(String doctorId) {
 		 SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 

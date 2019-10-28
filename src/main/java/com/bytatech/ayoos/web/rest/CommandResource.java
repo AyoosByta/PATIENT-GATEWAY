@@ -97,11 +97,13 @@ public class CommandResource {
 		return patientcommandResourceApi.createPatientUsingPOST(patientDTO);
 	}
 
-	/*@PutMapping("/patients")
+	@PutMapping("/patients")
 	public ResponseEntity<PatientDTO> updatePatient(@RequestBody PatientDTO patientDTO) {
 		return patientcommandResourceApi.updatePatientUsingPUT(patientDTO);
 	}
-
+	
+	
+/*
 	@PostMapping("/address-lines")
 	public ResponseEntity<AddressLineDTO> createAddressLine(@RequestBody AddressLineDTO addressLineDTO) {
 		return patientcommandResourceApi.createAddressLineUsingPOST1(addressLineDTO);
