@@ -122,7 +122,7 @@ public class QueryServiceImpl implements QueryService {
 	}
 
 	@Override
-	public Optional<Patient> findPatient(String idpCode) {
+	public Patient findPatient(String idpCode) {
 		// matchQuery("patientCode", patientCode)
 
 		SearchSourceBuilder searchBuilder = new SearchSourceBuilder();
@@ -144,7 +144,7 @@ public class QueryServiceImpl implements QueryService {
 			e.printStackTrace();
 		}
 
-		return Optional.of(getResult1(searchResponse, new Patient()));
+		return getResult1(searchResponse, new Patient());
 	}
 
 	@Override
