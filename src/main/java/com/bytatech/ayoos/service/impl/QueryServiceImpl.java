@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.bytatech.ayoos.client.appointment.model.Appointment;
+
 import com.bytatech.ayoos.client.doctor.model.*;
 
 import com.bytatech.ayoos.client.patient.model.*;
@@ -71,8 +72,6 @@ public class QueryServiceImpl implements QueryService {
 		this.objectMapper = objectMapper;
 		this.restHighLevelClient = restHighLevelClient;
 	}
-
-	
 
 	@Override
 	public Page<Doctor> findAllDoctors(Pageable pageable) {
@@ -122,20 +121,34 @@ public class QueryServiceImpl implements QueryService {
 		return searchRequest;
 	}
 
-	private <T> Page getSearchResult(SearchResponse response, Pageable page, T t) {
+	@Override
+	public Optional<Patient> findPatient(String idpCode) {
+		// matchQuery("patientCode", patientCode)
 
-		SearchHit[] searchHit = response.getHits().getHits();
+		SearchSourceBuilder searchBuilder = new SearchSourceBuilder();
+		/*
+		 * String[] include = new String[] { "", "", "" };
+		 * 
+		 * searchBuilder.fetchSource(include, exclude);
+		 */
+		searchBuilder.query(termQuery("idpCode", idpCode));
 
-		List<T> list = new ArrayList<>();
+		SearchRequest searchRequest = new SearchRequest("patient");
 
-		for (SearchHit hit : searchHit) {
-			list.add((T) objectMapper.convertValue(hit.getSourceAsMap(), t.getClass()));
+		searchRequest.source(searchBuilder);
+		SearchResponse searchResponse = null;
+
+		try {
+			searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+		} catch (IOException e) { // TODO Auto-generated
+			e.printStackTrace();
 		}
 
-		return new PageImpl(list, page, response.getHits().getTotalHits());
-
+		return Optional.of(getSearchResult(searchResponse, new Patient()));
 	}
-	@Override public List<String> findAllQualifications(Pageable pageable) {
+
+	@Override
+	public List<String> findAllQualifications(Pageable pageable) {
 		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 		/*
 		 * String[] includeFields = new String[] { "iDPcode", "image" }; String[]
@@ -145,8 +158,8 @@ public class QueryServiceImpl implements QueryService {
 
 		searchSourceBuilder.query(matchAllQuery());
 
-		SearchRequest searchRequest = generateSearchRequest("qualification", pageable.getPageSize(), pageable.getPageNumber(),
-				searchSourceBuilder);
+		SearchRequest searchRequest = generateSearchRequest("qualification", pageable.getPageSize(),
+				pageable.getPageNumber(), searchSourceBuilder);
 		SearchResponse searchResponse = null;
 		try {
 			searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
@@ -154,12 +167,9 @@ public class QueryServiceImpl implements QueryService {
 			e.printStackTrace();
 		}
 		return getSearchResult(searchResponse, pageable, new Qualification()).getContent();
-		  
-		  }
-	
-	
-	
-	
+
+	}
+
 	/*
 	 * @Override public List<String> findAllQualifications(Pageable pageable) {
 	 * List<String> qualificationList = new ArrayList<String>(); SearchQuery
@@ -184,61 +194,71 @@ public class QueryServiceImpl implements QueryService {
 	 * 
 	 * }
 	 */
-	 @Override public Optional<Doctor> findDoctorByDoctorId(String doctorId) {
-		 SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+	@Override
+	public Optional<Doctor> findDoctorByDoctorId(String doctorId) {
+		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 
-			searchSourceBuilder.query(termQuery("doctorId",
-					  doctorId));
+		searchSourceBuilder.query(termQuery("doctorId", doctorId));
 
-			SearchRequest searchRequest = new SearchRequest("doctor");
-			searchRequest.source(searchSourceBuilder);
-			SearchResponse searchResponse = null;
-			try {
-				searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
-			} catch (IOException e) { // TODO Auto-generated
-				e.printStackTrace();
-			}
-			SearchHit[] searchHit = searchResponse.getHits().getHits();
-
-			List<Doctor> list = new ArrayList<>();
-
-			for (SearchHit hit : searchHit) {
-				list.add(objectMapper.convertValue(hit.getSourceAsMap(), Doctor.class));
-			}
-			return Optional.of(list.get(0));
- 
-		  
-		  }
-		 
-	 private <T> T getResult(SearchResponse response, T t) {
-
-			SearchHit[] searchHit = response.getHits().getHits();
-
-			List<T> list = new ArrayList<>();
-
-			for (SearchHit hit : searchHit) {
-				list.add((T) objectMapper.convertValue(hit.getSourceAsMap(), t.getClass()));
-			}
-
-			return list.get(0);
-
+		SearchRequest searchRequest = new SearchRequest("doctor");
+		searchRequest.source(searchSourceBuilder);
+		SearchResponse searchResponse = null;
+		try {
+			searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+		} catch (IOException e) { // TODO Auto-generated
+			e.printStackTrace();
 		}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+		SearchHit[] searchHit = searchResponse.getHits().getHits();
+
+		List<Doctor> list = new ArrayList<>();
+
+		for (SearchHit hit : searchHit) {
+			list.add(objectMapper.convertValue(hit.getSourceAsMap(), Doctor.class));
+		}
+		return Optional.of(list.get(0));
+
+	}
+
+	private <T> T getResult(SearchResponse response, T t) {
+
+		SearchHit[] searchHit = response.getHits().getHits();
+
+		List<T> list = new ArrayList<>();
+
+		for (SearchHit hit : searchHit) {
+			list.add((T) objectMapper.convertValue(hit.getSourceAsMap(), t.getClass()));
+		}
+
+		return list.get(0);
+
+	}
+
+	private <T> T getSearchResult(SearchResponse response, T t) {
+
+		SearchHit[] searchHit = response.getHits().getHits();
+		T type = null;
+
+		for (SearchHit hit : searchHit) {
+
+			type = (T) objectMapper.convertValue(hit.getSourceAsMap(), t.getClass());
+		}
+
+		return type;
+
+	}
+
+	private <T> Page getSearchResult(SearchResponse response, Pageable page, T t) {
+		SearchHit[] searchHit = response.getHits().getHits();
+
+		List<T> list = new ArrayList<>();
+
+		for (SearchHit hit : searchHit) {
+			list.add((T) objectMapper.convertValue(hit.getSourceAsMap(), t.getClass()));
+		}
+
+		return new PageImpl(list, page, response.getHits().getTotalHits());
+
+	}
 	/*
 	 *
 	 * 
@@ -314,11 +334,7 @@ public class QueryServiceImpl implements QueryService {
 	 * 
 	 * return elasticsearchOperations.queryForPage(searchQuery, Doctor.class); }
 	 * 
-	 * @Override public Optional<Patient> findPatient(String patientCode) {
-	 * StringQuery stringQuery = new StringQuery(matchQuery("patientCode",
-	 * patientCode).toString()); return
-	 * Optional.of(elasticsearchOperations.queryForObject(stringQuery,
-	 * Patient.class)); }
+	 * 
 	 * 
 	 * @Override public List<WorkPlace> findByLocationWithin(Point point, Distance
 	 * distance) {

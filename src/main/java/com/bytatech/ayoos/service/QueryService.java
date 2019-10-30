@@ -24,6 +24,15 @@ public interface QueryService {
 	
 	public  Optional<Doctor> findDoctorByDoctorId(String doctorId);
 
+	/**
+	 * @param idpCode
+	 * @return
+	 *findPatient
+	 * Optional<Patient>
+	 *
+	 */
+	Optional<Patient> findPatient(String idpCode);
+
 	/*public Page<Doctor> facetSearch(String specialization,Double ratings, Double feeFrom,
 			Double feeTo, Pageable pageable);
 
@@ -39,7 +48,7 @@ public interface QueryService {
 	 *//*
 	public Page<Doctor> findDoctors(String searchTerm,Pageable pageable);
 
-	public Optional<Patient> findPatient(String patientCode);
+	
 
 	
 

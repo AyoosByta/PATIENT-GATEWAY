@@ -123,14 +123,14 @@ public class QueryResource {
 
 		return ResponseEntity.ok().body(queryService.findDoctors(searchTerm, pageable).getContent());
 	}
-
+*/
 	@GetMapping("/patient/{patientCode}")
 	public ResponseEntity<Patient> findPatient(@PathVariable String patientCode) {
 		Optional<Patient> patient = queryService.findPatient(patientCode);
 		return ResponseUtil.wrapOrNotFound(patient);
 	}
 
-	*/
+	
 
 	@GetMapping("/test2/{date}/{doctorId}")
 	public ResponseEntity<List<ReservedSlotDTO>> test2(@PathVariable String date, @PathVariable Long doctorId) {
