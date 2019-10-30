@@ -144,7 +144,7 @@ public class QueryServiceImpl implements QueryService {
 			e.printStackTrace();
 		}
 
-		return Optional.of(getSearchResult(searchResponse, new Patient()));
+		return Optional.of(getResult1(searchResponse, new Patient()));
 	}
 
 	@Override
@@ -233,7 +233,7 @@ public class QueryServiceImpl implements QueryService {
 
 	}
 
-	private <T> T getSearchResult(SearchResponse response, T t) {
+	private <T> T getResult1(SearchResponse response, T t) {
 
 		SearchHit[] searchHit = response.getHits().getHits();
 		T type = null;
