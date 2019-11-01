@@ -123,7 +123,6 @@ public class QueryServiceImpl implements QueryService {
 
 	@Override
 	public Patient findPatient(String idpCode) {
-		// matchQuery("patientCode", patientCode)
 
 		SearchSourceBuilder searchBuilder = new SearchSourceBuilder();
 		/*
@@ -194,6 +193,7 @@ public class QueryServiceImpl implements QueryService {
 	 * 
 	 * }
 	 */
+
 	@Override
 	public Optional<Doctor> findDoctorByDoctorId(String doctorId) {
 		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
@@ -259,18 +259,34 @@ public class QueryServiceImpl implements QueryService {
 		return new PageImpl(list, page, response.getHits().getTotalHits());
 
 	}
+
+	@Override
+	public Appointment findAppointmentByTrackingId(String trackingId) {
+
+		// termQuery("trackingId.keyword", trackingId).toString()
+		SearchSourceBuilder searchBuilder = new SearchSourceBuilder();
+		/*
+		 * String[] include = new String[] { "", "", "" };
+		 * 
+		 * searchBuilder.fetchSource(include, exclude);
+		 */
+		searchBuilder.query(termQuery("trackingId.keyword", trackingId));
+
+		SearchRequest searchRequest = new SearchRequest("appointment");
+
+		searchRequest.source(searchBuilder);
+		SearchResponse searchResponse = null;
+
+		try {
+			searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+		} catch (IOException e) { // TODO Auto-generated
+			e.printStackTrace();
+		}
+
+		return getResult1(searchResponse, new Appointment());
+	}
+
 	/*
-	 *
-	 * 
-	 *
-	 * @Override public Optional<Appointment> findAppointmentByTrackingId(String
-	 * trackingId){
-	 * 
-	 * StringQuery stringQuery=new StringQuery(termQuery("trackingId.keyword",
-	 * trackingId).toString()); return
-	 * Optional.of(elasticsearchOperations.queryForObject(stringQuery,
-	 * Appointment.class)); }
-	 * 
 	 * @Override public List<String> findAllQualifications(Pageable pageable) {
 	 * List<String> qualificationList = new ArrayList<String>(); SearchQuery
 	 * searchQuery = new NativeSearchQueryBuilder().withQuery(matchAllQuery())
@@ -293,7 +309,7 @@ public class QueryServiceImpl implements QueryService {
 	 * return qualificationList;
 	 * 
 	 * }
-	 * 
+	 *
 	 * @Override public Page<Doctor> facetSearch(String specialization, Double
 	 * ratings, Double feeFrom, Double feeTo, Pageable pageable) {
 	 * 
@@ -316,26 +332,57 @@ public class QueryServiceImpl implements QueryService {
 	 * 
 	 * 
 	 * 
-	 * 
-	 * @Override public Page<Review> findReviewByDoctorId(String doctorId, Pageable
-	 * pageable) { SearchQuery searchQuery = new
-	 * NativeSearchQueryBuilder().withQuery(matchQuery("doctor.doctorId", doctorId))
-	 * .build();
-	 * 
-	 * return elasticsearchOperations.queryForPage(searchQuery, Review.class);
-	 * 
-	 * }
-	 * 
-	 * @Override public Page<Doctor> findDoctors(String searchTerm, Pageable
-	 * pageable) { SearchQuery searchQuery = new NativeSearchQueryBuilder()
-	 * .withQuery(QueryBuilders.boolQuery().should(QueryBuilders.matchQuery(
-	 * "doctorId", searchTerm)) .should(QueryBuilders.matchQuery("specialization",
-	 * searchTerm))) .build();
-	 * 
-	 * return elasticsearchOperations.queryForPage(searchQuery, Doctor.class); }
-	 * 
-	 * 
-	 * 
+	 */
+	@Override
+	public Page<Review> findReviewByDoctorId(String doctorId, Pageable pageable) {
+
+		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+		/*
+		 * String[] includeFields = new String[] { "iDPcode", "image" }; String[]
+		 * excludeFields = new String[] { "category.*", "brand.*" };
+		 * searchSourceBuilder.fetchSource(includeFields, excludeFields);
+		 */
+
+		searchSourceBuilder.query(matchQuery("doctor.doctorId", doctorId));
+
+		SearchRequest searchRequest = generateSearchRequest("review", pageable.getPageSize(), pageable.getPageNumber(),
+				searchSourceBuilder);
+		SearchResponse searchResponse = null;
+		try {
+			searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+		} catch (IOException e) { // TODO Auto-generated
+			e.printStackTrace();
+		}
+		return getSearchResult(searchResponse, pageable, new Review());
+
+	}
+
+	@Override
+	public Page<Doctor> findDoctors(String searchTerm, Pageable pageable) {
+
+		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+		/*
+		 * String[] includeFields = new String[] { "iDPcode", "image" }; String[]
+		 * excludeFields = new String[] { "category.*", "brand.*" };
+		 * searchSourceBuilder.fetchSource(includeFields, excludeFields);
+		 */
+
+		searchSourceBuilder.query(QueryBuilders.boolQuery().should(QueryBuilders.matchQuery("doctorId", searchTerm))
+				.should(QueryBuilders.matchQuery("specialization", searchTerm)));
+
+		SearchRequest searchRequest = generateSearchRequest("doctor", pageable.getPageSize(), pageable.getPageNumber(),
+				searchSourceBuilder);
+		SearchResponse searchResponse = null;
+		try {
+			searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+		} catch (IOException e) { // TODO Auto-generated
+			e.printStackTrace();
+		}
+		return getSearchResult(searchResponse, pageable, new Doctor());
+
+	}
+
+	/*
 	 * @Override public List<WorkPlace> findByLocationWithin(Point point, Distance
 	 * distance) {
 	 * 
@@ -346,44 +393,96 @@ public class QueryServiceImpl implements QueryService {
 	 * 
 	 * private CriteriaQuery getGeoQuery(Point point, Distance distance) { return
 	 * new CriteriaQuery(new Criteria("location").within(point, distance)); }
-	 * 
-	 * 
+	 */
+	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see
 	 * com.bytatech.ayoos.service.QueryService#findRatingByDoctorIdAndPatientName(
 	 * java.lang.String, java.lang.String)
-	 * 
-	 * @Override public UserRating findRatingByDoctorIdAndPatientName(String
-	 * doctorId, String patientCode) {
-	 * 
-	 * StringQuery stringQuery = new
-	 * StringQuery(QueryBuilders.boolQuery().must(QueryBuilders.termQuery(
-	 * "doctor.doctorId", doctorId)) .must(QueryBuilders.termQuery("userName",
-	 * patientCode)).toString());
-	 * 
-	 * return elasticsearchOperations.queryForObject(stringQuery, UserRating.class);
-	 * }
-	 * 
-	 * 
+	 */
+
+	@Override
+	public UserRating findRatingByDoctorIdAndPatientName(String doctorId, String patientCode) {
+
+		SearchSourceBuilder searchBuilder = new SearchSourceBuilder();
+		/*
+		 * String[] include = new String[] { "", "", "" };
+		 * 
+		 * searchBuilder.fetchSource(include, exclude);
+		 */
+		searchBuilder.query(QueryBuilders.boolQuery().must(QueryBuilders.termQuery("doctor.doctorId", doctorId))
+				.must(QueryBuilders.termQuery("userName", patientCode)));
+
+		SearchRequest searchRequest = new SearchRequest("userrating");
+
+		searchRequest.source(searchBuilder);
+		SearchResponse searchResponse = null;
+
+		try {
+			searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+		} catch (IOException e) { // TODO Auto-generated
+			e.printStackTrace();
+		}
+
+		return getResult1(searchResponse, new UserRating());
+
+	}
+
+	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see
 	 * com.bytatech.ayoos.service.QueryService#findReviewByDoctorIdAndPatientName(
 	 * java.lang.String, java.lang.String)
-	 * 
-	 * @Override public Review findReviewByDoctorIdAndPatientName(String doctorId,
-	 * String patientCode) { StringQuery stringQuery = new
-	 * StringQuery(QueryBuilders.boolQuery().must(QueryBuilders.termQuery(
-	 * "doctor.doctorId", doctorId)) .must(QueryBuilders.termQuery("userName",
-	 * patientCode)).toString());
-	 * 
-	 * return elasticsearchOperations.queryForObject(stringQuery, Review.class); }
-	 * 
-	 * 
-	 * @Override public Page<Patient> findAllPatientWithoutSearch(Pageable pageable)
-	 * { SearchQuery searchQuery = new
-	 * NativeSearchQueryBuilder().withQuery(matchAllQuery()).build(); return
-	 * elasticsearchOperations.queryForPage(searchQuery, Patient.class); }
 	 */
+	@Override
+	public Review findReviewByDoctorIdAndPatientName(String doctorId, String patientCode) {
+
+		SearchSourceBuilder searchBuilder = new SearchSourceBuilder();
+		/*
+		 * String[] include = new String[] { "", "", "" };
+		 * 
+		 * searchBuilder.fetchSource(include, exclude);
+		 */
+		searchBuilder.query(QueryBuilders.boolQuery().must(QueryBuilders.termQuery("doctor.doctorId", doctorId))
+				.must(QueryBuilders.termQuery("userName", patientCode)));
+
+		SearchRequest searchRequest = new SearchRequest("review");
+
+		searchRequest.source(searchBuilder);
+		SearchResponse searchResponse = null;
+
+		try {
+			searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+		} catch (IOException e) { // TODO Auto-generated
+			e.printStackTrace();
+		}
+
+		return getResult1(searchResponse, new Review());
+	}
+	
+	  @Override public Page<Patient> findAllPatientWithoutSearch(Pageable pageable)
+	  {  
+		  SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+			/*
+			 * String[] includeFields = new String[] { "iDPcode", "image" }; String[]
+			 * excludeFields = new String[] { "category.*", "brand.*" };
+			 * searchSourceBuilder.fetchSource(includeFields, excludeFields);
+			 */
+
+			searchSourceBuilder.query(matchAllQuery());
+
+			SearchRequest searchRequest = generateSearchRequest("patient", pageable.getPageSize(), pageable.getPageNumber(),
+					searchSourceBuilder);
+			SearchResponse searchResponse = null;
+			try {
+				searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
+			} catch (IOException e) { // TODO Auto-generated
+				e.printStackTrace();
+			}
+			return getSearchResult(searchResponse, pageable, new Patient());
+		  
+	  }
+	 
 }
