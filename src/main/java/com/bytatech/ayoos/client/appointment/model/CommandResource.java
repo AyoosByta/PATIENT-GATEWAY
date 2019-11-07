@@ -21,7 +21,7 @@ import javax.validation.constraints.*;
 public class CommandResource {
 	@JsonProperty("_links")
 	@Valid
-	private List<Link> links = null;
+	private Link links = null;
 	@JsonProperty("trackingId")
 	private String trackingId;
 	@JsonProperty("nextTaskId")
@@ -74,16 +74,16 @@ public class CommandResource {
 	@JsonProperty("status")
 	private String status = null;
 
-	public CommandResource links(List<Link> links) {
+	public CommandResource links(Link links) {
 		this.links = links;
 		return this;
 	}
 
 	public CommandResource addLinksItem(Link linksItem) {
 		if (this.links == null) {
-			this.links = new ArrayList<Link>();
+			this.links = new Link();
 		}
-		this.links.add(linksItem);
+		//this.links.add(linksItem);
 		return this;
 	}
 
@@ -96,11 +96,11 @@ public class CommandResource {
 
 	@Valid
 
-	public List<Link> getLinks() {
+	public Link getLinks() {
 		return links;
 	}
 
-	public void setLinks(List<Link> links) {
+	public void setLinks(Link links) {
 		this.links = links;
 	}
 
